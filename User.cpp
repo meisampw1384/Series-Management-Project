@@ -21,3 +21,7 @@ string User::getUsername()
 string User::getPassword(){
     return password;
 }
+
+void User::displayMenu(){
+    
+}

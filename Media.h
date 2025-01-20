@@ -32,6 +32,7 @@ public:
     void setRating(float &value);
     string getPlotSummary();
     void setPlotSummary(string &value);
+    virtual void displayInfo() = 0;
 };
 
 #endif

@@ -18,6 +18,7 @@ public:
     void setNumberOfSeasons(int &value);
     int getNumberOfEpisodes();
     void setNumberOfEpisodes(int &value);
+    void displayInfo() override;
     ~Series();
 };
 

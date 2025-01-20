@@ -8,6 +8,13 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
+                "AdminUser.cpp",
+                "ClientUser.cpp",
+                "Series.cpp",
+                "Media.cpp",
+                "Movie.cpp",
+                "User.cpp",
+                "CompressedTrie.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],

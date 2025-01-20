@@ -17,3 +17,15 @@ void Movie::setDuration(int &value)
 {
     duration = value;
 }
+
+void Movie::displayInfo()
+{
+    cout << "Movie Name: " << name << endl;
+    cout << "Release Year: " << releaseYear << endl;
+    cout << "Duration: " << duration << " minutes" << endl;
+    cout << "Genre: " << genre << endl;
+    cout << "Language: " << language << endl;
+    cout << "Country: " << countryOfOrigin << endl;
+    cout << "Rating: " << rating << endl;
+    cout << "Plot: " << plotSummary << endl;
+}

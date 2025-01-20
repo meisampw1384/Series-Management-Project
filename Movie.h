@@ -15,6 +15,7 @@ public:
     Movie(string name, int year, int dur, string country, string gen, string lang, float rate, string plot);
     int getDuration();
     void setDuration(int &value);
+    void displayInfo() override;
 };
 
 #endif // MOVIE_H
