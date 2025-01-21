@@ -15,6 +15,7 @@
                 "Movie.cpp",
                 "User.cpp",
                 "CompressedTrie.cpp",
+                "SplayTree.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],

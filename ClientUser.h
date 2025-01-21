@@ -2,21 +2,25 @@
 #define CLIENTUSER_H
 #include "User.h"
 #include "CompressedTrie.h"
-class ClientUser:public User {
+#include "SplayTree.h"
+class ClientUser : public User
+{
 private:
-    CompressedTrie* trie;
+    CompressedTrie *trie;
+    SplayTree *splayTree;
+
 public:
-    ClientUser(const string& uname, const string& pwd);
+    ClientUser(const string &uname, const string &pwd);
     ClientUser();
-    void setUname(const string& uname);
-    void setPwd(const string& pwd);
+    void setUname(const string &uname);
+    void setPwd(const string &pwd);
     void displayMenu();
     void searchMedia();
-    void setTrie(CompressedTrie* trie);
+    int levenshteinDistance(const string &a, const string &b);
+    void advancedSearch();
+    void setTrie(CompressedTrie *trie);
+    void setSplayTree(SplayTree *splayTree);
     ~ClientUser();
-
-
-
 };
 
-#endif 
+#endif

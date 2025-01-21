@@ -32,6 +32,8 @@ public:
     void insert(const string &key, Media *media);
     void searchPrefix(const string &prefix, Media *results[], int &count);
     void clear(CompressedTrieNode *node);
+    void collectMedia(CompressedTrieNode *node, Media *results[], int &count);
+    int getAllMedia(Media *results[]);
 };
 
 #endif // COMPRESSEDTRIE_H
