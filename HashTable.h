@@ -7,10 +7,10 @@ using namespace std;
 
 struct HashNode 
 {
-    string key;                  // The attribute (e.g., genre, language)
-    Media* mediaList[100];       // List of Media objects for this key
-    int count;                   // Number of media entries in this bucket
-    HashNode* next;              // Handle collisions with chaining
+    string key;
+    Media* mediaList[100];
+    int count;
+    HashNode* next;
 
     HashNode(string k) : key(k), count(0), next(nullptr) {}
 };
@@ -18,13 +18,15 @@ struct HashNode
 class HashTable 
 {
 private:
-    static const int TABLE_SIZE = 100;   // Fixed size for simplicity
-    HashNode* table[TABLE_SIZE];         // Array of pointers for chaining
+    static const int TABLE_SIZE = 100;
+    HashNode* table[TABLE_SIZE];
 
-    int hashFunction(const string& key) {
+    int hashFunction(const string& key) 
+    {
         int hash = 0;
-        for (char c : key) {
-            hash = (hash * 31 + c) % TABLE_SIZE;  // Basic hash function
+        for (char c : key) 
+        {
+            hash = (hash * 31 + c) % TABLE_SIZE; 
         }
         return hash;
     }
@@ -32,7 +34,7 @@ private:
 public:
     HashTable();
     void insert(const string& key, Media* media);
-    void search(const string& key_country,const string& key_language,const string& key_genre);
+    void search(const string& key_country,const string& key_language,const string& key_genre, const int& key_year, const int& key_score);
     void delete_media(const string& key, Media* media);
 };
 

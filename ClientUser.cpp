@@ -231,6 +231,7 @@ void ClientUser::advancedSearch()
 void ClientUser::filterMedia(HashTable& hashTable) 
 {
     string genreFilter, languageFilter, countryFilter;
+    int yearFilter, scoreFilter;
 
     cout << "Do you want to filter by genre? (y/n): ";
     string choice;
@@ -266,9 +267,33 @@ void ClientUser::filterMedia(HashTable& hashTable)
     else
     {
         countryFilter = "NAN";
-    }    
+    }
 
-    hashTable.search(countryFilter, languageFilter, genreFilter);
+    cout << "Do you want to filter by score? (y/n): ";
+    cin >> choice;
+    if (choice == "y") 
+    {
+        cout << "Enter score: ";
+        cin >> scoreFilter;
+    }
+    else
+    {
+        scoreFilter = -1;
+    }
+
+    cout << "Do you want to filter by year? (y/n): ";
+    cin >> choice;
+    if (choice == "y") 
+    {
+        cout << "Enter year: ";
+        cin >> yearFilter;
+    }
+    else
+    {
+        yearFilter = -1;
+    }
+
+    hashTable.search(countryFilter, languageFilter, genreFilter, yearFilter, scoreFilter);
 }
 
 ClientUser::~ClientUser()

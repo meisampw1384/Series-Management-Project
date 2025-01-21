@@ -1,4 +1,34 @@
 #include "HashTable.h"
+#include <iostream>
+
+void bubbleSort(Media ** arr, int n, int mode) 
+{
+
+    for (int i = 0; i < n - 1; i++) 
+    {
+        for (int j = 0; j < n - i - 1; j++) 
+        {
+            if (!mode)
+            {
+                if (arr[j]->getRating() > arr[j + 1]->getRating()) 
+                {
+                    auto tmp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = tmp;
+                }
+            }
+            else
+            {
+                if (arr[j]->getReleaseYear() > arr[j + 1]->getReleaseYear()) 
+                {
+                    auto tmp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = tmp;
+                }
+            }
+        }
+    }
+}
 
 HashTable::HashTable()
 {
@@ -29,9 +59,10 @@ void HashTable::insert(const string& key, Media* media)
     table[index] = newNode;
 }
 
-void HashTable::search(const string& key_country,const string& key_language,const string& key_genre) 
+void HashTable::search(const string& key_country,const string& key_language,const string& key_genre, const int& key_year, const int& key_score) 
 {
     HashNode* current;
+    Media * list[100];
     int choose_way = 0;
     int count = 0;
     if (key_country != "NAN")
@@ -104,9 +135,10 @@ void HashTable::search(const string& key_country,const string& key_language,cons
             {
                 for (int i = 0; i < current->count; i++)
                 {
-                    if ((key_genre == "NAN" or current->mediaList[i]->getGenre() == key_genre) and (key_language == "NAN" or current->mediaList[i]->getLanguage() == key_language))
+                    if ((key_genre == "NAN" or current->mediaList[i]->getGenre() == key_genre) and (key_language == "NAN" or current->mediaList[i]->getLanguage() == key_language) and (key_score == -1 or current->mediaList[i]->getRating() == key_score) and (key_year == -1 or current->mediaList[i]->getReleaseYear() == key_year))
                     {
-                        cout << current->mediaList[i]->getName() << "...." << current->mediaList[i]->getReleaseYear() << endl;
+                        list[count] = current->mediaList[i];
+                        count++;
                     }
                 }
                 break;
@@ -125,9 +157,10 @@ void HashTable::search(const string& key_country,const string& key_language,cons
             {
                 for (int i = 0; i < current->count; i++)
                 {
-                    if ((key_genre == "NAN" or current->mediaList[i]->getGenre() == key_genre) and (key_country == "NAN" or current->mediaList[i]->getCountryOfOrigin() == key_country))
+                    if ((key_genre == "NAN" or current->mediaList[i]->getGenre() == key_genre) and (key_country == "NAN" or current->mediaList[i]->getCountryOfOrigin() == key_country) and (key_score == -1 or current->mediaList[i]->getRating() == key_score) and (key_year == -1 or current->mediaList[i]->getReleaseYear() == key_year))
                     {
-                        cout << current->mediaList[i]->getName() << "...." << current->mediaList[i]->getReleaseYear() << endl;
+                        list[count] = current->mediaList[i];
+                        count++;                    
                     }
                 }
                 break;
@@ -146,15 +179,44 @@ void HashTable::search(const string& key_country,const string& key_language,cons
             {
                 for (int i = 0; i < current->count; i++)
                 {
-                    if ((key_language == "NAN" or current->mediaList[i]->getLanguage() == key_language) and (key_country == "NAN" or current->mediaList[i]->getCountryOfOrigin() == key_country))
+                    if ((key_language == "NAN" or current->mediaList[i]->getLanguage() == key_language) and (key_country == "NAN" or current->mediaList[i]->getCountryOfOrigin() == key_country) and (key_score == -1 or current->mediaList[i]->getRating() == key_score) and (key_year == -1 or current->mediaList[i]->getReleaseYear() == key_year))
                     {
-                        cout << current->mediaList[i]->getName() << "...." << current->mediaList[i]->getReleaseYear() << endl;
+                        list[count] = current->mediaList[i];
+                        count++;
                     }
                 }
                 break;
             }
             current = current->next;
         }
+    }
+
+    if (key_score == -1 and key_year == -1)
+    {
+        bubbleSort(list,count,0);
+        for (int i = 0; i < count; i++)
+        {
+            cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
+        }
+        return;
+    }
+    if (key_score == -1)
+    {
+        bubbleSort(list,count,0);
+        for (int i = 0; i < count; i++)
+        {
+            cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
+        }
+        return;
+    }
+    if (key_year == -1)
+    {
+        bubbleSort(list,count,1);
+        for (int i = 0; i < count; i++)
+        {
+            cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
+        }
+        return;
     }
 }
 
