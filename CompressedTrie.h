@@ -34,6 +34,7 @@ public:
     void clear(CompressedTrieNode *node);
     void collectMedia(CompressedTrieNode *node, Media *results[], int &count);
     int getAllMedia(Media *results[]);
+    Media* searchExact(const string& key);
 };
 
 #endif // COMPRESSEDTRIE_H

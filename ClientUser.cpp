@@ -1,9 +1,9 @@
 #include "ClientUser.h"
 #include <algorithm>
 
-ClientUser::ClientUser() : User(), trie(nullptr), splayTree(nullptr) {}
+ClientUser::ClientUser() : User(), trie(nullptr), splayTree(nullptr), favoriteCount(0) {}
 
-ClientUser::ClientUser(const string &uname, const string &pwd) : User(uname, pwd), trie(nullptr), splayTree(nullptr) {}
+ClientUser::ClientUser(const string &uname, const string &pwd) : User(uname, pwd), trie(nullptr), splayTree(nullptr), favoriteCount(0) {}
 
 void ClientUser::setUname(const string &uname)
 {
@@ -25,7 +25,7 @@ void ClientUser::setSplayTree(SplayTree *splayTree)
     this->splayTree = splayTree;
 }
 
-void ClientUser::displayMenu(HashTable& hashTable)
+void ClientUser::displayMenu(HashTable &hashTable, Media *mediaList[])
 {
     int choice;
 
@@ -34,8 +34,12 @@ void ClientUser::displayMenu(HashTable& hashTable)
         cout << "\n--- Client Menu ---" << endl;
         cout << "1. Search for Media" << endl;
         cout << "2. Advanced Search" << endl;
-        cout << "3. filter" << endl;
-        cout << "4. Logout" << endl;
+        cout << "3. Filter Media" << endl;
+        cout << "4. Display All Media" << endl;
+        cout << "5. Add Media to Favorites" << endl;
+        cout << "6. Display Favorites" << endl;
+        cout << "7. Remove Media from Favorites" << endl;
+        cout << "8. Logout" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -45,15 +49,58 @@ void ClientUser::displayMenu(HashTable& hashTable)
             searchMedia();
             break;
         case 2:
-            advancedSearch();  
+            advancedSearch();
             break;
         case 3:
             filterMedia(hashTable);
+            break;
         case 4:
+            displayAllMedia(mediaList);
+            break;
+        case 5:
+        {
+
+            string mediaName;
+            cout << "Enter the name of the media to add to favorites: ";
+            cin >> mediaName;
+            Media *media = trie->searchExact(mediaName);
+            if (media)
+            {
+                addToFavorites(media);
+                cout << "Media added to favorites!" << endl;
+            }
+            else
+            {
+                cout << "Media not found!" << endl;
+            }
+        }
+        break;
+        case 6:
+            displayFavorites(); //
+            break;
+        case 7:
+        {
+            string mediaName;
+            cout << "Enter the name of the media to add to favorites: ";
+            cin >> mediaName;
+            Media *media = trie->searchExact(mediaName);
+            if (media)
+            {
+                removeFromFavorites(media);
+                cout << "Media added to favorites!" << endl;
+            }
+            else
+            {
+                cout << "Media not found!" << endl;
+            }
+        }
+        break;
+        case 8:
             cout << "Logging out..." << endl;
             return;
         default:
             cout << "Invalid choice! Please try again." << endl;
+            break;
         }
     }
 }
@@ -140,14 +187,12 @@ void ClientUser::advancedSearch()
     cout << "Enter media name (or part of it): ";
     cin >> query;
 
- 
     if (splayTree && splayTree->search(query))
     {
         cout << "Found \"" << query << "\" in frequently searched items!" << endl;
         return;
     }
 
-   
     Media *prefixResults[100];
     int prefixCount = 0;
     if (trie)
@@ -171,7 +216,7 @@ void ClientUser::advancedSearch()
         int mediaCount = 0;
         if (trie)
         {
-            mediaCount = trie->getAllMedia(allMedia); 
+            mediaCount = trie->getAllMedia(allMedia);
         }
 
         string suggestions[100];
@@ -181,7 +226,7 @@ void ClientUser::advancedSearch()
         for (int i = 0; i < mediaCount; i++)
         {
             int distance = levenshteinDistance(query, allMedia[i]->getName());
-            if (distance <= 2) 
+            if (distance <= 2)
             {
                 suggestions[suggestionCount] = allMedia[i]->getName();
                 distances[suggestionCount] = distance;
@@ -221,14 +266,13 @@ void ClientUser::advancedSearch()
         }
     }
 
-    
     if (splayTree)
     {
         splayTree->insert(query);
     }
 }
 
-void ClientUser::filterMedia(HashTable& hashTable) 
+void ClientUser::filterMedia(HashTable &hashTable)
 {
     string genreFilter, languageFilter, countryFilter;
     int yearFilter, scoreFilter;
@@ -236,7 +280,8 @@ void ClientUser::filterMedia(HashTable& hashTable)
     cout << "Do you want to filter by genre? (y/n): ";
     string choice;
     cin >> choice;
-    if (choice == "y") {
+    if (choice == "y")
+    {
         cout << "Enter genre: ";
         cin >> genreFilter;
     }
@@ -247,7 +292,7 @@ void ClientUser::filterMedia(HashTable& hashTable)
 
     cout << "Do you want to filter by language? (y/n): ";
     cin >> choice;
-    if (choice == "y") 
+    if (choice == "y")
     {
         cout << "Enter language: ";
         cin >> languageFilter;
@@ -259,7 +304,7 @@ void ClientUser::filterMedia(HashTable& hashTable)
 
     cout << "Do you want to filter by country? (y/n): ";
     cin >> choice;
-    if (choice == "y") 
+    if (choice == "y")
     {
         cout << "Enter country: ";
         cin >> countryFilter;
@@ -271,7 +316,7 @@ void ClientUser::filterMedia(HashTable& hashTable)
 
     cout << "Do you want to filter by score? (y/n): ";
     cin >> choice;
-    if (choice == "y") 
+    if (choice == "y")
     {
         cout << "Enter score: ";
         cin >> scoreFilter;
@@ -283,7 +328,7 @@ void ClientUser::filterMedia(HashTable& hashTable)
 
     cout << "Do you want to filter by year? (y/n): ";
     cin >> choice;
-    if (choice == "y") 
+    if (choice == "y")
     {
         cout << "Enter year: ";
         cin >> yearFilter;
@@ -294,6 +339,151 @@ void ClientUser::filterMedia(HashTable& hashTable)
     }
 
     hashTable.search(countryFilter, languageFilter, genreFilter, yearFilter, scoreFilter);
+}
+
+void ClientUser::displayAllMedia(Media *mediaList[])
+{
+    if (mediaList == nullptr)
+    {
+        cout << "Media list is not available!" << endl;
+        return;
+    }
+
+    cout << "--- List of All Movies and Series ---" << endl;
+
+    int index = 0;
+    while (mediaList[index] != nullptr)
+    {
+        cout << "-----------------------------------" << endl;
+        mediaList[index]->displayInfo();
+        index++;
+    }
+
+    if (index == 0)
+    {
+        cout << "No media available!" << endl;
+    }
+    else
+    {
+        cout << "-----------------------------------" << endl;
+        cout << "Total Media Items: " << index << endl;
+    }
+}
+
+void ClientUser::addToFavorites(Media *media)
+{
+    if (favoriteCount >= 1000)
+    {
+        cout << "Favorite list is full!" << endl;
+        return;
+    }
+
+    for (int i = 0; i < favoriteCount; i++)
+    {
+        if (favoriteList[i] == media)
+        {
+            cout << "Media is already in the favorite list." << endl;
+            return;
+        }
+    }
+
+    favoriteList[favoriteCount++] = media;
+    cout << "Added \"" << media->getName() << "\" to your favorites!" << endl;
+    sortFavorites();
+}
+
+void ClientUser::removeFromFavorites(Media *media)
+{
+    for (int i = 0; i < favoriteCount; ++i)
+    {
+        if (favoriteList[i] == media)
+        {
+            for (int j = i; j < favoriteCount - 1; ++j)
+            {
+                favoriteList[j] = favoriteList[j + 1];
+            }
+            favoriteCount--;
+            cout << "Media removed from favorites!" << endl;
+            return;
+        }
+    }
+    cout << "Media not found in favorites!" << endl;
+}
+
+void ClientUser::displayFavorites()
+{
+    if (favoriteCount == 0)
+    {
+        cout << "Your favorite list is empty." << endl;
+        return;
+    }
+
+    cout << "Your Favorites:" << endl;
+    for (int i = 0; i < favoriteCount; i++)
+    {
+        cout << "- " << favoriteList[i]->getName() << " (" << favoriteList[i]->getReleaseYear() << ")" << endl;
+    }
+}
+
+void merge(Media *arr[], int left, int mid, int right)
+{
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    Media *leftArr[n1];
+    Media *rightArr[n2];
+
+    for (int i = 0; i < n1; i++)
+        leftArr[i] = arr[left + i];
+    for (int i = 0; i < n2; i++)
+        rightArr[i] = arr[mid + 1 + i];
+
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2)
+    {
+        if (leftArr[i]->getName() <= rightArr[j]->getName())
+        {
+            arr[k] = leftArr[i];
+            i++;
+        }
+        else
+        {
+            arr[k] = rightArr[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1)
+    {
+        arr[k] = leftArr[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2)
+    {
+        arr[k] = rightArr[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(Media *arr[], int left, int right)
+{
+    if (left < right)
+    {
+        int mid = left + (right - left) / 2;
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        merge(arr, left, mid, right);
+    }
+}
+
+void ClientUser::sortFavorites()
+{
+    mergeSort(favoriteList, 0, favoriteCount - 1);
+    cout << "Favorites sorted alphabetically!" << endl;
 }
 
 ClientUser::~ClientUser()

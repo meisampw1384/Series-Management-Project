@@ -34,7 +34,7 @@ void login(string username, string password)
                 cout << "You are logged in as a client." << endl;
                 users[i].setTrie(&mediaTrie);
                 users[i].setSplayTree(&mediaSplayTree);
-                users[i].displayMenu(hashTable);
+                users[i].displayMenu(hashTable,mediaList);
                 return;
             }
         }

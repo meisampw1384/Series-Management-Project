@@ -79,3 +79,37 @@ void CompressedTrie::collectMedia(CompressedTrieNode *node, Media *results[], in
         }
     }
 }
+
+
+Media* CompressedTrie::searchExact(const string& key) {
+    CompressedTrieNode* currentNode = root;
+    int i = 0;
+
+    while (i < key.length()) {
+        bool found = false;
+
+    
+        for (int j = 0; j < 26; j++) {
+            if (currentNode->children[j] != nullptr && key[i] == currentNode->children[j]->value[0]) {
+                currentNode = currentNode->children[j];
+                int j = 0;
+                while (j < currentNode->value.length() && i < key.length() && key[i] == currentNode->value[j]) {
+                    i++;
+                    j++;
+                }
+
+                if (j == currentNode->value.length()) {
+                    found = true;
+                }
+                break;
+            }
+        }
+
+        if (!found) {
+            return nullptr; 
+        }
+    }
+
+  
+    return currentNode->media;
+}

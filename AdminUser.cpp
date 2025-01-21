@@ -54,7 +54,6 @@ void AdminUser::addMovie(Media *mediaList[], int &mediaCount, CompressedTrie &co
 {
     string name, country, genre, language, plot;
     int releaseYear, duration;
-    float rating;
 
     cout << "Enter movie name: ";
     cin >> name;
@@ -71,7 +70,7 @@ void AdminUser::addMovie(Media *mediaList[], int &mediaCount, CompressedTrie &co
     cout << "Enter plot summary: ";
     cin.ignore();
     getline(cin, plot);
-    Movie *newMovie = new Movie(name, releaseYear, duration, country, genre, language, rating, plot);
+    Movie *newMovie = new Movie(name, releaseYear, duration, country, genre, language, 0, plot);
 
     mediaList[mediaCount] = newMovie;
     compressedTrie.insert(name, newMovie);
