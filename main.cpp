@@ -4,6 +4,7 @@
 #include "Media.h"
 #include "AdminUser.h"
 #include "CompressedTrie.h"
+#include "HashTable.h"
 
 using namespace std;
 
@@ -14,13 +15,15 @@ int media_count = 0;
 int number_user = 0;
 CompressedTrie mediaTrie;
 SplayTree mediaSplayTree;
+HashTable hashTable;
+
 
 void login(string username, string password)
 {
     if (username == "admin" && password == "admin")
     {
         cout << "You are logged in as an admin." << endl;
-        admin.displayMenu(mediaList, media_count,mediaTrie);
+        admin.displayMenu(mediaList, media_count,mediaTrie,hashTable);
     }
     else
     {
@@ -31,7 +34,7 @@ void login(string username, string password)
                 cout << "You are logged in as a client." << endl;
                 users[i].setTrie(&mediaTrie);
                 users[i].setSplayTree(&mediaSplayTree);
-                users[i].displayMenu();
+                users[i].displayMenu(hashTable);
                 return;
             }
         }

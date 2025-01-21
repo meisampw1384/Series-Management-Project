@@ -2,22 +2,23 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: g++ build active file",
-            "command": "/usr/bin/g++",
+            "label": "C/C++: g++.exe build active file",
+            "command": "C:\\Program Files\\msys64\\ucrt64\\bin\\g++.exe",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
                 "AdminUser.cpp",
                 "ClientUser.cpp",
-                "Series.cpp",
+                "CompressedTrie.cpp",
                 "Media.cpp",
                 "Movie.cpp",
-                "User.cpp",
-                "CompressedTrie.cpp",
+                "Series.cpp",
                 "SplayTree.cpp",
+                "User.cpp",
+                "HashTable.cpp",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
             "options": {
                 "cwd": "${fileDirname}"

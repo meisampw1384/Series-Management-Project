@@ -25,7 +25,7 @@ void ClientUser::setSplayTree(SplayTree *splayTree)
     this->splayTree = splayTree;
 }
 
-void ClientUser::displayMenu()
+void ClientUser::displayMenu(HashTable& hashTable)
 {
     int choice;
 
@@ -34,7 +34,8 @@ void ClientUser::displayMenu()
         cout << "\n--- Client Menu ---" << endl;
         cout << "1. Search for Media" << endl;
         cout << "2. Advanced Search" << endl;
-        cout << "3. Logout" << endl;
+        cout << "3. filter" << endl;
+        cout << "4. Logout" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -47,6 +48,8 @@ void ClientUser::displayMenu()
             advancedSearch();  
             break;
         case 3:
+            filterMedia(hashTable);
+        case 4:
             cout << "Logging out..." << endl;
             return;
         default:
@@ -223,6 +226,49 @@ void ClientUser::advancedSearch()
     {
         splayTree->insert(query);
     }
+}
+
+void ClientUser::filterMedia(HashTable& hashTable) 
+{
+    string genreFilter, languageFilter, countryFilter;
+
+    cout << "Do you want to filter by genre? (y/n): ";
+    string choice;
+    cin >> choice;
+    if (choice == "y") {
+        cout << "Enter genre: ";
+        cin >> genreFilter;
+    }
+    else
+    {
+        genreFilter = "NAN";
+    }
+
+    cout << "Do you want to filter by language? (y/n): ";
+    cin >> choice;
+    if (choice == "y") 
+    {
+        cout << "Enter language: ";
+        cin >> languageFilter;
+    }
+    else
+    {
+        languageFilter = "NAN";
+    }
+
+    cout << "Do you want to filter by country? (y/n): ";
+    cin >> choice;
+    if (choice == "y") 
+    {
+        cout << "Enter country: ";
+        cin >> countryFilter;
+    }
+    else
+    {
+        countryFilter = "NAN";
+    }    
+
+    hashTable.search(countryFilter, languageFilter, genreFilter);
 }
 
 ClientUser::~ClientUser()
