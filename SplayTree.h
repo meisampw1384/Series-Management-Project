@@ -15,12 +15,12 @@ public:
 };
 class SplayTree {
 private:
-    SplayNode *root;
     SplayNode* rightRotate(SplayNode* x);
     SplayNode* leftRotate(SplayNode* x);
     SplayNode* splay(SplayNode* root, const string &key);
 
 public:
+    SplayNode *root;
     SplayTree();
     ~SplayTree();
     void insert(const string &key);
