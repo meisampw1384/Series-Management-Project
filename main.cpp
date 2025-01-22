@@ -24,7 +24,7 @@ void login(string username, string password)
     if (username == "admin" && password == "admin")
     {
         cout << "You are logged in as an admin." << endl;
-        admin.displayMenu(mediaList, media_count,mediaTrie,hashTable);
+        admin.displayMenu(mediaList, media_count,mediaTrie,hashTable,mediaSplayTree);
     }
     else
     {
@@ -36,7 +36,7 @@ void login(string username, string password)
                 users[i].setTrie(&mediaTrie);
                 users[i].setSplayTree(&mediaSplayTree);
                 users[i].setSuggestionTree(&SuggestionTree);
-                users[i].displayMenu(&hashTable,mediaList);
+                users[i].displayMenu(&hashTable,mediaList,media_count);
                 return;
             }
         }

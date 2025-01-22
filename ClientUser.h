@@ -18,14 +18,14 @@ public:
     ClientUser();
     void setUname(const string &uname);
     void setPwd(const string &pwd);
-    void displayMenu(HashTable *hashTable, Media *mediaList[]);
-    void searchMedia();
+    void displayMenu(HashTable *hashTable, Media *mediaList[],int &media_count);
+    void searchMedia(string prefix);
     int levenshteinDistance(const string &a, const string &b);
     void advancedSearch();
     void setTrie(CompressedTrie *trie);
     void setSplayTree(SplayTree *splayTree);
     void setSuggestionTree(SplayTree *SuggestionTree);
-    void displayAllMedia(Media *mediaList[]);
+    void displayAllMedia(Media *mediaList[],int &media_count);
     void filterMedia(HashTable *hashTable);
     void addToFavorites(Media *media);
     void removeFromFavorites(Media *media);

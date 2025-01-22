@@ -29,7 +29,7 @@ void ClientUser::setSuggestionTree(SplayTree *SuggestionTree)
     this->SuggestionTree = SuggestionTree;
 }
 
-void ClientUser::displayMenu(HashTable *hashTable, Media *mediaList[])
+void ClientUser::displayMenu(HashTable *hashTable, Media *mediaList[], int &media_count)
 {
     int choice;
 
@@ -43,19 +43,20 @@ void ClientUser::displayMenu(HashTable *hashTable, Media *mediaList[])
         cout << "5. Add Media to Favorites" << endl;
         cout << "6. Display Favorites" << endl;
         cout << "7. Remove Media from Favorites" << endl;
-<<<<<<< HEAD
         cout << "8. Rate Media" << endl;
-=======
-        cout << "8. surprise me!" << endl;
->>>>>>> matin
-        cout << "9. Logout" << endl;
+        cout << "9. surprise me!" << endl;
+        cout << "10. Logout" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
 
         switch (choice)
         {
-        case 1:
-            searchMedia();
+        case 1:{
+            string prefix;
+            cout << "Enter the prefix of the media name: ";
+            cin >> prefix;
+            searchMedia(prefix);
+        }
             break;
         case 2:
             advancedSearch();
@@ -64,7 +65,7 @@ void ClientUser::displayMenu(HashTable *hashTable, Media *mediaList[])
             filterMedia(hashTable);
             break;
         case 4:
-            displayAllMedia(mediaList);
+            displayAllMedia(mediaList, media_count);
             break;
         case 5:
         {
@@ -105,7 +106,6 @@ void ClientUser::displayMenu(HashTable *hashTable, Media *mediaList[])
         break;
         case 8:
         {
-<<<<<<< HEAD
             string mediaName;
             float rating;
             cout << "Enter the name of the media to rate:";
@@ -153,17 +153,13 @@ void ClientUser::surpriseme(HashTable *hashTable)
     hashTable->search("NAN", "NAN", sug->mediaName, -1, -1);
 }
 
-void ClientUser::searchMedia()
+void ClientUser::searchMedia(string prefix)
 {
     if (!trie)
     {
         cout << "Media database is not available!" << endl;
         return;
     }
-
-    string prefix;
-    cout << "Enter the prefix of the media name: ";
-    cin >> prefix;
 
     Media *results[100];
     int count = 0;
@@ -236,10 +232,25 @@ void ClientUser::advancedSearch()
     cout << "Enter media name (or part of it): ";
     cin >> query;
 
-    if (splayTree && splayTree->search(query))
+    if (splayTree)
     {
-        cout << "Found \"" << query << "\" in frequently searched items!" << endl;
-        return;
+        cout << "Searching frequently searched items for prefix \"" << query << "\":" << endl;
+
+        const int MAX_RECENT_MATCHES = 100;
+        string recentMatches[MAX_RECENT_MATCHES];
+        int matchCount = 0;
+
+        splayTree->getPrefixMatches(query, recentMatches, matchCount, MAX_RECENT_MATCHES);
+
+        if (matchCount > 0)
+        {
+            cout << "Found in recently searched items:" << endl;
+            for (int i = 0; i < matchCount; i++)
+            {
+                searchMedia(recentMatches[i]);
+            }
+            return;
+        }
     }
 
     Media *prefixResults[100];
@@ -255,6 +266,7 @@ void ClientUser::advancedSearch()
         for (int i = 0; i < prefixCount; i++)
         {
             SuggestionTree->insert(prefixResults[i]->getGenre());
+            splayTree->insert(prefixResults[i]->getName());
             cout << "- " << prefixResults[i]->getName() << " (" << prefixResults[i]->getReleaseYear() << ")" << endl;
         }
     }
@@ -288,6 +300,7 @@ void ClientUser::advancedSearch()
         if (suggestionCount == 0)
         {
             cout << "No suggestions found." << endl;
+            return;
         }
         else
         {
@@ -313,13 +326,10 @@ void ClientUser::advancedSearch()
             for (int i = 0; i < suggestionCount; i++)
             {
                 cout << "- " << suggestions[i] << endl;
+                splayTree->insert(suggestions[i]);
+                return;
             }
         }
-    }
-
-    if (splayTree)
-    {
-        splayTree->insert(query);
     }
 }
 
@@ -392,7 +402,7 @@ void ClientUser::filterMedia(HashTable *hashTable)
     hashTable->search(countryFilter, languageFilter, genreFilter, yearFilter, scoreFilter);
 }
 
-void ClientUser::displayAllMedia(Media *mediaList[])
+void ClientUser::displayAllMedia(Media *mediaList[], int &media_count)
 {
     if (mediaList == nullptr)
     {
@@ -403,11 +413,10 @@ void ClientUser::displayAllMedia(Media *mediaList[])
     cout << "--- List of All Movies and Series ---" << endl;
 
     int index = 0;
-    while (mediaList[index] != nullptr)
+    for (index = 0; index < media_count; index++)
     {
         cout << "-----------------------------------" << endl;
         mediaList[index]->displayInfo();
-        index++;
     }
 
     if (index == 0)
@@ -417,7 +426,7 @@ void ClientUser::displayAllMedia(Media *mediaList[])
     else
     {
         cout << "-----------------------------------" << endl;
-        cout << "Total Media Items: " << index << endl;
+        cout << "Total Media Items: " << media_count << endl;
     }
 }
 

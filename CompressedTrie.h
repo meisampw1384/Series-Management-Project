@@ -1,24 +1,18 @@
+#ifndef COMPRESSED_TRIE_H
+#define COMPRESSED_TRIE_H
 
-
-#ifndef COMPRESSEDTRIE_H
-#define COMPRESSEDTRIE_H
-
-#include "Media.h"
+#include "Media.h" // Assuming you have a Media class defined
 
 class CompressedTrieNode
 {
 public:
-    string value;
-    CompressedTrieNode *children[26];
-    Media *media;
+    std::string value;
+    Media *mediaList[100];            // Array to hold multiple Media objects (up to 100)
+    int mediaCount;                   // To keep track of how many Media objects are stored in the node
+    CompressedTrieNode *children[26]; // Children nodes (for each letter a-z)
 
-    CompressedTrieNode(string val = "") : value(val), media(nullptr)
-    {
-        for (int i = 0; i < 26; i++)
-        {
-            children[i] = nullptr;
-        }
-    }
+    // Constructor
+    CompressedTrieNode(std::string val = "");
 };
 
 class CompressedTrie
@@ -29,12 +23,15 @@ private:
 public:
     CompressedTrie();
     ~CompressedTrie();
-    void insert(const string &key, Media *media);
-    void searchPrefix(const string &prefix, Media *results[], int &count);
+
     void clear(CompressedTrieNode *node);
-    void collectMedia(CompressedTrieNode *node, Media *results[], int &count);
+    bool remove(const string &key, Media *media);
+    bool removeHelper(CompressedTrieNode *node, const std::string &key, int depth,Media* media);
+    void insert(const std::string &key, Media *media);
+    void searchPrefix(const std::string &prefix, Media *results[], int &count);
     int getAllMedia(Media *results[]);
-    Media* searchExact(const string& key);
+    void collectMedia(CompressedTrieNode *node, Media *results[], int &count);
+    Media *searchExact(const std::string &key);
 };
 
-#endif // COMPRESSEDTRIE_H
+#endif

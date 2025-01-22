@@ -26,7 +26,9 @@ public:
     void insert(const string &key);
     bool search(const string &key);
     void deleteTree(SplayNode* node);
-
+    void remove(const string& key);
+    void getPrefixMatches(const string &prefix, string matches[], int &matchCount, int maxMatches);
+    void getPrefixMatchesHelper(SplayNode *node, const string &prefix, string matches[], int &matchCount, int maxMatches);
 };
 
 #endif 

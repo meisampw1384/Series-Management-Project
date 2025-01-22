@@ -108,3 +108,46 @@ bool SplayTree::search(const string &key)
     root = splay(root, key);
     return root && root->mediaName == key;
 }
+void SplayTree::getPrefixMatches(const string &prefix, string matches[], int &matchCount, int maxMatches)
+{
+    getPrefixMatchesHelper(root, prefix, matches, matchCount, maxMatches);
+}
+
+void SplayTree::getPrefixMatchesHelper(SplayNode *node, const string &prefix, string matches[], int &matchCount, int maxMatches)
+{
+    if (!node || matchCount >= maxMatches)
+        return;
+
+
+    if (node->mediaName.find(prefix) == 0) 
+    {
+        matches[matchCount++] = node->mediaName;
+    }
+
+    
+    getPrefixMatchesHelper(node->right, prefix, matches, matchCount, maxMatches);
+}
+void SplayTree::remove(const string &key)
+{
+    if (!root)
+        return;
+
+    root = splay(root, key);
+
+    if (root->mediaName != key)
+        return; // Key not found
+
+    SplayNode *temp;
+    if (!root->left)
+    {
+        temp = root;
+        root = root->right;
+    }
+    else
+    {
+        temp = root;
+        root = splay(root->left, key);
+        root->right = temp->right;
+    }
+    delete temp;
+}
