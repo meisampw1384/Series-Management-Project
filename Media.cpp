@@ -10,7 +10,7 @@ Media::~Media()
 }
 
 Media::Media(string _name, int year, string country, string gen, string lang, float rate, string plot)
-    : name(_name), releaseYear(year), countryOfOrigin(country), genre(gen), language(lang), rating(rate), plotSummary(plot) {}
+    : name(_name), releaseYear(year), countryOfOrigin(country), genre(gen), language(lang), rating(rate), ratingCount(0), plotSummary(plot) {}
 
 string Media::getName()
 {
@@ -58,7 +58,8 @@ float Media::getRating()
 }
 void Media::setRating(float &value)
 {
-    rating = value;
+    rating = ((rating * ratingCount) + value) / (ratingCount + 1);
+    ratingCount++;
 }
 string Media::getPlotSummary()
 {

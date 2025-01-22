@@ -12,6 +12,7 @@ protected:
     string genre;
     string language;
     float rating;
+    int ratingCount;
     string plotSummary;
 
 public:

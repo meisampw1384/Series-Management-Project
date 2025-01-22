@@ -39,7 +39,8 @@ void ClientUser::displayMenu(HashTable &hashTable, Media *mediaList[])
         cout << "5. Add Media to Favorites" << endl;
         cout << "6. Display Favorites" << endl;
         cout << "7. Remove Media from Favorites" << endl;
-        cout << "8. Logout" << endl;
+        cout << "8. Rate Media" << endl;
+        cout << "9. Logout" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -81,13 +82,13 @@ void ClientUser::displayMenu(HashTable &hashTable, Media *mediaList[])
         case 7:
         {
             string mediaName;
-            cout << "Enter the name of the media to add to favorites: ";
+            cout << "Enter the name of the media to delete from favorites: ";
             cin >> mediaName;
             Media *media = trie->searchExact(mediaName);
             if (media)
             {
                 removeFromFavorites(media);
-                cout << "Media added to favorites!" << endl;
+                cout << "Media deleted from favorites!" << endl;
             }
             else
             {
@@ -96,6 +97,34 @@ void ClientUser::displayMenu(HashTable &hashTable, Media *mediaList[])
         }
         break;
         case 8:
+        {
+            string mediaName;
+            float rating;
+            cout << "Enter the name of the media to rate:";
+            cin >> mediaName;
+            Media *media = trie->searchExact(mediaName);
+            if (media)
+            {
+                cout << "Enter your rating (0 to 10): ";
+                cin >> rating;
+                if (rating >= 0 && rating <= 10)
+                {
+                    media->setRating(rating);
+                    cout << "New average rating: " << media->getRating() << endl;
+                    cout << "Rating added successfully!" << endl;
+                }
+                else
+                {
+                    cout << "Invalid rating! Please enter a value between 0 and 10." << endl;
+                }
+            }
+            else
+            {
+                cout << "Media not found!" << endl;
+            }
+        }
+        break;
+        case 9:
             cout << "Logging out..." << endl;
             return;
         default:
