@@ -15,6 +15,7 @@ int media_count = 0;
 int number_user = 0;
 CompressedTrie mediaTrie;
 SplayTree mediaSplayTree;
+SplayTree SuggestionTree;
 HashTable hashTable;
 
 
@@ -34,7 +35,8 @@ void login(string username, string password)
                 cout << "You are logged in as a client." << endl;
                 users[i].setTrie(&mediaTrie);
                 users[i].setSplayTree(&mediaSplayTree);
-                users[i].displayMenu(hashTable,mediaList);
+                users[i].setSuggestionTree(&SuggestionTree);
+                users[i].displayMenu(&hashTable,mediaList);
                 return;
             }
         }
