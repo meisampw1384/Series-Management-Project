@@ -34,7 +34,7 @@ private:
 public:
     HashTable();
     void insert(const string& key, Media* media);
-    void search(const string& key_country,const string& key_language,const string& key_genre, const int& key_year, const int& key_score);
+    bool search(const string& key_country,const string& key_language,const string& key_genre, const int& key_year, const int& key_score, bool mode);
     void delete_media(const string& key, Media* media);
 };
 

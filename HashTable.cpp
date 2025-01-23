@@ -59,7 +59,7 @@ void HashTable::insert(const string& key, Media* media)
     table[index] = newNode;
 }
 
-void HashTable::search(const string& key_country,const string& key_language,const string& key_genre, const int& key_year, const int& key_score) 
+bool HashTable::search(const string& key_country,const string& key_language,const string& key_genre, const int& key_year, const int& key_score, bool mode) 
 {
     HashNode* current;
     Media * list[100];
@@ -74,7 +74,7 @@ void HashTable::search(const string& key_country,const string& key_language,cons
         {
             if (current->key == key_country) 
             {
-                if (count < current->count)
+                if (count >= current->count or count == 0)
                 {
                     count = current->count;
                     choose_way = 1;
@@ -91,9 +91,9 @@ void HashTable::search(const string& key_country,const string& key_language,cons
 
         while (current) 
         {
-            if (current->key == key_language) 
+            if ((current->key == key_language)) 
             {
-                if (count < current->count)
+                if (count >= current->count or count == 0)
                 {
                     choose_way = 2;
                     count = current->count;
@@ -110,9 +110,9 @@ void HashTable::search(const string& key_country,const string& key_language,cons
 
         while (current) 
         {
-            if (current->key == key_genre) 
+            if ((current->key == key_genre)) 
             {
-                if (count < current->count)
+                if (count >= current->count or count == 0)
                 {
                     choose_way = 3;
                     count = current->count;
@@ -191,33 +191,60 @@ void HashTable::search(const string& key_country,const string& key_language,cons
         }
     }
 
+    if(count < 1)
+    {
+        if (mode)
+        {
+            cout << "no mathcing item found!" << endl;
+        }
+        return 0;
+    }
+
     if (key_score == -1 and key_year == -1)
     {
-        bubbleSort(list,count,0);
-        for (int i = 0; i < count; i++)
+        if (mode)
         {
-            cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
+            bubbleSort(list,count,0);
+            for (int i = 0; i < count; i++)
+            {
+                cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
+            }
         }
-        return;
     }
     if (key_score == -1)
     {
-        bubbleSort(list,count,0);
-        for (int i = 0; i < count; i++)
+        if(mode)
         {
-            cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
+            bubbleSort(list,count,1);
+            for (int i = 0; i < count; i++)
+            {
+                cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
+            }
         }
-        return;
     }
     if (key_year == -1)
     {
-        bubbleSort(list,count,1);
-        for (int i = 0; i < count; i++)
+        if(mode)
         {
-            cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
+            bubbleSort(list,count,0);
+            for (int i = 0; i < count; i++)
+            {
+                cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
+            }
         }
-        return;
     }
+    if (key_year != -1 and key_score != -1)
+    {
+        if (mode)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
+            }
+        }
+    }
+
+    return 1;
 }
 
 void HashTable::delete_media(const string& key, Media* media)
@@ -225,25 +252,55 @@ void HashTable::delete_media(const string& key, Media* media)
     int index = hashFunction(key);
     HashNode* current = table[index];
 
-    while (current) 
+    if (current and current->key == key)
     {
-        if (current->key == key) 
+        int i = 0;
+        for (i; i < current->count; i++)
         {
-            int i = 0;
+            if(current->mediaList[i] == media)
+            {
+                break;
+            }
+        }
+        if (i < current->count)
+        {
             for (i; i < current->count; i++)
             {
-                if(current->mediaList[i] == media)
+                current->mediaList[i] = current->mediaList[i+1];
+            }
+            current->count--;
+            if (current->count == 0)
+            {
+                table[index] = nullptr;
+            }
+            return;
+        }
+    }
+    
+
+    while (current->next) 
+    {
+        if (current->next->key == key) 
+        {
+            int i = 0;
+            for (i; i < current->next->count; i++)
+            {
+                if(current->next->mediaList[i] == media)
                 {
                     break;
                 }
             }
-            if (i < current->count)
+            if (i < current->next->count)
             {
                 for (i; i < current->count; i++)
                 {
-                    current->mediaList[i] = current->mediaList[i+1];
+                    current->next->mediaList[i] = current->next->mediaList[i+1];
                 }
-                current->count--;
+                current->next->count--;
+                if (current->next->count == 0)
+                {
+                    current->next = current->next->next;
+                }
                 return;
             }
         }

@@ -148,9 +148,30 @@ void ClientUser::displayMenu(HashTable *hashTable, Media *mediaList[], int &medi
 void ClientUser::surpriseme(HashTable *hashTable)
 {
     cout << "lets surprise you!" << endl;
-    auto sug = SuggestionTree->root;
-    cout << "the trend genre is now : " << sug->mediaName << endl;
-    hashTable->search("NAN", "NAN", sug->mediaName, -1, -1);
+    if (SuggestionTree->root!= nullptr)
+    {
+        string sug = SuggestionTree->root->mediaName;
+        while(!(hashTable->search("NAN", "NAN", sug, -1, -1, 0)))
+        {
+            SuggestionTree->remove(sug);
+            if (SuggestionTree->root)
+            {
+                auto sug = SuggestionTree->root->mediaName;
+            }
+            else
+            {
+                cout << "sorry, there is no enough data to surprise!" <<endl;
+                return;
+            }
+        }
+        cout << "the trend genre is now : " << sug << endl;
+        hashTable->search("NAN", "NAN", sug, -1, -1, 1);
+    }
+    else
+    {
+        cout << "sorry, there is no enough data to surprise!" <<endl;
+        return;
+    }
 }
 
 void ClientUser::searchMedia(string prefix)
@@ -399,7 +420,7 @@ void ClientUser::filterMedia(HashTable *hashTable)
         yearFilter = -1;
     }
 
-    hashTable->search(countryFilter, languageFilter, genreFilter, yearFilter, scoreFilter);
+    hashTable->search(countryFilter, languageFilter, genreFilter, yearFilter, scoreFilter, 1);
 }
 
 void ClientUser::displayAllMedia(Media *mediaList[], int &media_count)
