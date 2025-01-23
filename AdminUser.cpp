@@ -52,6 +52,7 @@ void AdminUser::displayMenu(Media *mediaList[], int &mediaCount, CompressedTrie 
 
         default:
             cout << "Invalid choice! Please try again." << endl;
+            break;
         }
     }
 }

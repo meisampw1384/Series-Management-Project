@@ -160,7 +160,7 @@ bool HashTable::search(const string& key_country,const string& key_language,cons
                     if ((key_genre == "NAN" or current->mediaList[i]->getGenre() == key_genre) and (key_country == "NAN" or current->mediaList[i]->getCountryOfOrigin() == key_country) and (key_score == -1 or current->mediaList[i]->getRating() == key_score) and (key_year == -1 or current->mediaList[i]->getReleaseYear() == key_year))
                     {
                         list[count] = current->mediaList[i];
-                        count++;                    
+                        count++;     
                     }
                 }
                 break;
@@ -210,19 +210,9 @@ bool HashTable::search(const string& key_country,const string& key_language,cons
                 cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
             }
         }
+        return 1;
     }
     if (key_score == -1)
-    {
-        if(mode)
-        {
-            bubbleSort(list,count,1);
-            for (int i = 0; i < count; i++)
-            {
-                cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
-            }
-        }
-    }
-    if (key_year == -1)
     {
         if(mode)
         {
@@ -232,6 +222,19 @@ bool HashTable::search(const string& key_country,const string& key_language,cons
                 cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
             }
         }
+        return 1;
+    }
+    if (key_year == -1)
+    {
+        if(mode)
+        {
+            bubbleSort(list,count,1);
+            for (int i = 0; i < count; i++)
+            {
+                cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
+            }
+        }
+        return 1;
     }
     if (key_year != -1 and key_score != -1)
     {
@@ -242,6 +245,7 @@ bool HashTable::search(const string& key_country,const string& key_language,cons
                 cout << list[i]->getName() << "...." << list[i]->getReleaseYear() << "...." << list[i]->getRating() << endl;
             }
         }
+        return 1;
     }
 
     return 1;
