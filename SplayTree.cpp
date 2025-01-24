@@ -1,6 +1,6 @@
 #include "SplayTree.h"
 
-SplayNode::SplayNode(const string &name) : mediaName(name), left(nullptr), right(nullptr) {}
+SplayNode::SplayNode(const string &name) : mediaName(name), left(nullptr), right(nullptr), count(0)  {}
 SplayNode *SplayTree::rightRotate(SplayNode *x)
 {
     SplayNode *y = x->left;
@@ -58,7 +58,7 @@ SplayNode *SplayTree::splay(SplayNode *root, const string &key)
     }
 }
 
-SplayTree::SplayTree() : root(nullptr) {}
+SplayTree::SplayTree() : root(nullptr), max_count(0) {}
 
 SplayTree::~SplayTree()
 {
@@ -106,6 +106,15 @@ void SplayTree::insert(const string &key)
 bool SplayTree::search(const string &key)
 {
     root = splay(root, key);
+    if (root && root->mediaName == key)
+    {
+        root->count++;
+        if(root->count > max_count)
+        {
+            max_count = root->count;
+            max = root;
+        }
+    }
     return root && root->mediaName == key;
 }
 void SplayTree::getPrefixMatches(const string &prefix, string matches[], int &matchCount, int maxMatches)
@@ -149,5 +158,11 @@ void SplayTree::remove(const string &key)
         root = splay(root->left, key);
         root->right = temp->right;
     }
+    if (max == temp)
+    {
+        max = root;
+        max_count = root->count;
+    }
+    
     delete temp;
 }

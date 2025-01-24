@@ -156,7 +156,7 @@ void ClientUser::surpriseme(HashTable *hashTable)
             SuggestionTree->remove(sug);
             if (SuggestionTree->root)
             {
-                auto sug = SuggestionTree->root->mediaName;
+                sug = SuggestionTree->root->mediaName;
             }
             else
             {
@@ -164,6 +164,14 @@ void ClientUser::surpriseme(HashTable *hashTable)
                 return;
             }
         }
+        if (SuggestionTree->max and ((SuggestionTree->max_count)/2) + 1 > SuggestionTree->root->count)
+        {
+            sug = SuggestionTree->max->mediaName;
+            if(!(hashTable->search("NAN", "NAN", sug, -1, -1, 0)))
+            {SuggestionTree->remove(sug);
+            sug = SuggestionTree->root->mediaName;}
+        }
+        
         cout << "the trend genre is now : " << sug << endl;
         hashTable->search("NAN", "NAN", sug, -1, -1, 1);
     }
@@ -195,7 +203,10 @@ void ClientUser::searchMedia(string prefix)
         cout << "Found " << count << " result(s):" << endl;
         for (int i = 0; i < count; i++)
         {
-            SuggestionTree->insert(results[i]->getGenre());
+            if(!SuggestionTree->search(results[i]->getGenre()))
+            {
+                SuggestionTree->insert(results[i]->getGenre());
+            }
             cout << "- " << results[i]->getName() << " (" << results[i]->getReleaseYear() << ")" << endl;
         }
     }
