@@ -1,5 +1,6 @@
 #include "ClientUser.h"
 #include <vector>
+#include <unordered_set>
 #include <algorithm>
 
 ClientUser::ClientUser() : User(), trie(nullptr), splayTree(nullptr), favoriteCount(0) {}
@@ -379,15 +380,18 @@ void ClientUser::advancedSearch()
             if (prefixCount > 0)
             {
                 bool foundInSplay = false;
+                unordered_set<string> flag;
+
                 for (int i = 0; i < prefixCount; i++)
                 {
                     string mediaName = prefixResults[i]->getName();
                     foundInSplay = splayTree->search(mediaName); 
 
-                    if (foundInSplay)
+                    if (foundInSplay && flag.find(mediaName)==flag.end())
                     {
                         searchMedia(mediaName);
                     }
+                    flag.insert(mediaName);
                 }
                 if (foundInSplay){
                     return;
@@ -470,7 +474,7 @@ void ClientUser::advancedSearch()
 
             for (int i = 0; i < suggestionCount; i++)
             {
-                cout << "- " << suggestions[i] << endl;
+                cout << "- " << suggestions[i]<< endl;
                 splayTree->insert(suggestions[i]);
             }
         }
