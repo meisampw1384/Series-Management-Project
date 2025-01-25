@@ -37,9 +37,10 @@ void Series::setNumberOfEpisodes(int &value)
 }
 void Series::displayInfo()
 {
-    cout << "Movie Name: " << name << endl;
+    cout << "Series Name: " << name << endl;
     cout << "Release Year: " << releaseYear << endl;
-    cout << "Duration: " << episodeDuration << " minutes" << endl;
+    cout << "Number of seasons:" << numberOfSeasons << endl;
+    cout << "Episode Duration: " << episodeDuration << " minutes" << endl;
     cout << "Genre: " << genre << endl;
     cout << "Language: " << language << endl;
     cout << "Country: " << countryOfOrigin << endl;

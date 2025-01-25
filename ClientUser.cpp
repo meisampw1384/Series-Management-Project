@@ -1,4 +1,5 @@
 #include "ClientUser.h"
+#include <vector>
 #include <algorithm>
 
 ClientUser::ClientUser() : User(), trie(nullptr), splayTree(nullptr), favoriteCount(0) {}
@@ -51,13 +52,14 @@ void ClientUser::displayMenu(HashTable *hashTable, Media *mediaList[], int &medi
 
         switch (choice)
         {
-        case 1:{
+        case 1:
+        {
             string prefix;
             cout << "Enter the prefix of the media name: ";
             cin >> prefix;
             searchMedia(prefix);
         }
-            break;
+        break;
         case 2:
             advancedSearch();
             break;
@@ -72,18 +74,53 @@ void ClientUser::displayMenu(HashTable *hashTable, Media *mediaList[], int &medi
             string mediaName;
             cout << "Enter the name of the media to add to favorites: ";
             cin >> mediaName;
-            Media *media = trie->searchExact(mediaName);
-            if (media)
+
+            vector<Media *> matchingMedia;
+
+            for (int i = 0; i < media_count; i++)
             {
-                addToFavorites(media);
+                if (mediaList[i]->getName() == mediaName)
+                {
+                    matchingMedia.push_back(mediaList[i]);
+                }
+            }
+
+            if (matchingMedia.empty())
+            {
+                cout << "Media not found!" << endl;
+            }
+            else if (matchingMedia.size() == 1)
+            {
+
+                addToFavorites(matchingMedia[0]);
                 cout << "Media added to favorites!" << endl;
             }
             else
             {
-                cout << "Media not found!" << endl;
+
+                cout << "Multiple media found with the name \"" << mediaName << "\". Please choose one:\n";
+                for (int i = 0; i < matchingMedia.size(); i++)
+                {
+                    cout << i + 1 << ". " << matchingMedia[i]->getName() << "(" << matchingMedia[i]->getReleaseYear() << ")" << endl;
+                }
+
+                int choice;
+                cout << "Enter the number of your choice: ";
+                cin >> choice;
+
+                if (choice >= 1 && choice <= matchingMedia.size())
+                {
+                    addToFavorites(matchingMedia[choice - 1]);
+                    cout << "Media added to favorites!" << endl;
+                }
+                else
+                {
+                    cout << "Invalid choice!" << endl;
+                }
             }
         }
         break;
+
         case 6:
             displayFavorites();
             break;
@@ -92,46 +129,110 @@ void ClientUser::displayMenu(HashTable *hashTable, Media *mediaList[], int &medi
             string mediaName;
             cout << "Enter the name of the media to delete from favorites: ";
             cin >> mediaName;
-            Media *media = trie->searchExact(mediaName);
-            if (media)
+
+            vector<Media *> matchingMedia;
+
+            for (int i = 0; i < favoriteCount; i++)
             {
-                removeFromFavorites(media);
-                cout << "Media deleted from favorites!" << endl;
+                if (favoriteList[i]->getName() == mediaName)
+                {
+                    matchingMedia.push_back(favoriteList[i]);
+                }
+            }
+
+            if (matchingMedia.empty())
+            {
+                cout << "Media not found in favorites!" << endl;
+            }
+            else if (matchingMedia.size() == 1)
+            {
+                removeFromFavorites(matchingMedia[0]);
+                cout << "Media removed from favorites!" << endl;
             }
             else
             {
-                cout << "Media not found!" << endl;
+                cout << "Multiple media found with the name \"" << mediaName << "\" in favorites. Please choose one to delete:\n";
+                for (size_t i = 0; i < matchingMedia.size(); i++)
+                {
+                    cout << i + 1 << ". " << matchingMedia[i]->getName() << "(" << matchingMedia[i]->getReleaseYear() << ")" << endl;
+                }
+
+                int choice;
+                cout << "Enter the number of your choice: ";
+                cin >> choice;
+
+                if (choice >= 1 && choice <= matchingMedia.size())
+                {
+                    removeFromFavorites(matchingMedia[choice - 1]);
+                }
+                else
+                {
+                    cout << "Invalid choice!" << endl;
+                }
             }
         }
         break;
+
         case 8:
         {
             string mediaName;
             float rating;
-            cout << "Enter the name of the media to rate:";
+
+            cout << "Enter the name of the media to rate: ";
             cin >> mediaName;
-            Media *media = trie->searchExact(mediaName);
-            if (media)
+            Media *results[100];
+            int resultCount = 0;
+
+            for (int i = 0; i < media_count; i++)
             {
-                cout << "Enter your rating (0 to 10): ";
-                cin >> rating;
-                if (rating >= 0 && rating <= 10)
+                if (mediaList[i] && mediaList[i]->getName() == mediaName)
                 {
-                    media->setRating(rating);
-                    cout << "New average rating: " << media->getRating() << endl;
-                    cout << "Rating added successfully!" << endl;
+                    results[resultCount++] = mediaList[i];
                 }
-                else
-                {
-                    cout << "Invalid rating! Please enter a value between 0 and 10." << endl;
-                }
+            }
+
+            if (resultCount == 0)
+            {
+                cout << "No media found with the name \"" << mediaName << "\"." << endl;
+                break;
+            }
+
+            cout << "Found the following media(s):" << endl;
+            for (int i = 0; i < resultCount; i++)
+            {
+                cout << i + 1 << ". " << results[i]->getName()
+                     << " (" << results[i]->getReleaseYear() << ") - Rating: "
+                     << results[i]->getRating() << endl;
+            }
+
+            int choice;
+            cout << "Enter the number of the media to rate: ";
+            cin >> choice;
+
+            if (choice < 1 || choice > resultCount)
+            {
+                cout << "Invalid choice! Aborting rating process." << endl;
+                break;
+            }
+
+            Media *mediaToRate = results[choice - 1];
+
+            cout << "Enter your rating (0 to 10): ";
+            cin >> rating;
+
+            if (rating >= 0 && rating <= 10)
+            {
+                mediaToRate->setRating(rating);
+                cout << "New average rating: " << mediaToRate->getRating() << endl;
+                cout << "Rating added successfully!" << endl;
             }
             else
             {
-                cout << "Media not found!" << endl;
+                cout << "Invalid rating! Please enter a value between 0 and 10." << endl;
             }
         }
         break;
+
         case 9:
             surpriseme(hashTable);
             break;
@@ -148,10 +249,10 @@ void ClientUser::displayMenu(HashTable *hashTable, Media *mediaList[], int &medi
 void ClientUser::surpriseme(HashTable *hashTable)
 {
     cout << "lets surprise you!" << endl;
-    if (SuggestionTree->root!= nullptr)
+    if (SuggestionTree->root != nullptr)
     {
         string sug = SuggestionTree->root->mediaName;
-        while(!(hashTable->search("NAN", "NAN", sug, -1, -1, 0)))
+        while (!(hashTable->search("NAN", "NAN", sug, -1, -1, 0)))
         {
             SuggestionTree->remove(sug);
             if (SuggestionTree->root)
@@ -160,24 +261,26 @@ void ClientUser::surpriseme(HashTable *hashTable)
             }
             else
             {
-                cout << "sorry, there is no enough data to surprise!" <<endl;
+                cout << "sorry, there is no enough data to surprise!" << endl;
                 return;
             }
         }
-        if (SuggestionTree->max and ((SuggestionTree->max_count)/2) + 1 > SuggestionTree->root->count)
+        if (SuggestionTree->max and ((SuggestionTree->max_count) / 2) + 1 > SuggestionTree->root->count)
         {
             sug = SuggestionTree->max->mediaName;
-            if(!(hashTable->search("NAN", "NAN", sug, -1, -1, 0)))
-            {SuggestionTree->remove(sug);
-            sug = SuggestionTree->root->mediaName;}
+            if (!(hashTable->search("NAN", "NAN", sug, -1, -1, 0)))
+            {
+                SuggestionTree->remove(sug);
+                sug = SuggestionTree->root->mediaName;
+            }
         }
-        
+
         cout << "the trend genre is now : " << sug << endl;
         hashTable->search("NAN", "NAN", sug, -1, -1, 1);
     }
     else
     {
-        cout << "sorry, there is no enough data to surprise!" <<endl;
+        cout << "sorry, there is no enough data to surprise!" << endl;
         return;
     }
 }
@@ -200,10 +303,9 @@ void ClientUser::searchMedia(string prefix)
     }
     else
     {
-        cout << "Found " << count << " result(s):" << endl;
         for (int i = 0; i < count; i++)
         {
-            if(!SuggestionTree->search(results[i]->getGenre()))
+            if (!SuggestionTree->search(results[i]->getGenre()))
             {
                 SuggestionTree->insert(results[i]->getGenre());
             }

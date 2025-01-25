@@ -12,7 +12,7 @@ AdminUser::~AdminUser()
 {
 }
 
-void AdminUser::displayMenu(Media *mediaList[], int &mediaCount, CompressedTrie &compressedTrie, HashTable &hashTable, SplayTree &splayTree)
+void AdminUser::displayMenu(Media *mediaList[], int &mediaCount, CompressedTrie &compressedTrie, HashTable &hashTable, SplayTree &splayTree, ClientUser users[], int number_of_user)
 {
     int choice;
     while (true)
@@ -38,12 +38,12 @@ void AdminUser::displayMenu(Media *mediaList[], int &mediaCount, CompressedTrie 
 
         case 3:
             cout << "\n--- Delete Movie ---" << endl;
-            deleteMedia(mediaList, mediaCount, compressedTrie, hashTable, splayTree, "Movie");
+            deleteMedia(mediaList, mediaCount, compressedTrie, hashTable, splayTree, "Movie", users, number_of_user);
             break;
 
         case 4:
             cout << "\n--- Delete Series ---" << endl;
-            deleteMedia(mediaList, mediaCount, compressedTrie, hashTable,splayTree, "Series");
+            deleteMedia(mediaList, mediaCount, compressedTrie, hashTable, splayTree, "Series", users, number_of_user);
             break;
 
         case 5:
@@ -95,7 +95,6 @@ void AdminUser::addSeries(Media *mediaList[], int &mediaCount, CompressedTrie &c
 {
     string name, country, genre, language, plot;
     int releaseYear, episodeDuration, seasons, episodes;
-    float rating;
 
     cout << "Enter series name: ";
     cin >> name;
@@ -116,7 +115,7 @@ void AdminUser::addSeries(Media *mediaList[], int &mediaCount, CompressedTrie &c
     cout << "Enter plot summary: ";
     cin.ignore();
     getline(cin, plot);
-    Series *newSeries = new Series(name, releaseYear, episodeDuration, country, genre, language, rating, plot, seasons, episodes);
+    Series *newSeries = new Series(name, releaseYear, episodeDuration, country, genre, language, 0, plot, seasons, episodes);
 
     mediaList[mediaCount] = newSeries;
     compressedTrie.insert(name, newSeries);
@@ -128,7 +127,7 @@ void AdminUser::addSeries(Media *mediaList[], int &mediaCount, CompressedTrie &c
     cout << "Series added successfully!" << endl;
 }
 
-void AdminUser::deleteMedia(Media *mediaList[], int &mediaCount, CompressedTrie &compressedTrie, HashTable &hashTable, SplayTree &splayTree, const string &type)
+void AdminUser::deleteMedia(Media *mediaList[], int &mediaCount, CompressedTrie &compressedTrie, HashTable &hashTable, SplayTree &splayTree, const string &type, ClientUser users[], int number_of_user)
 {
     string name;
     cout << "Enter the name of the " << type << " to delete: ";
@@ -137,7 +136,6 @@ void AdminUser::deleteMedia(Media *mediaList[], int &mediaCount, CompressedTrie 
     Media *results[100];
     int resultCount = 0;
 
-    
     for (int i = 0; i < mediaCount; i++)
     {
         if (mediaList[i] && mediaList[i]->getName() == name)
@@ -174,21 +172,17 @@ void AdminUser::deleteMedia(Media *mediaList[], int &mediaCount, CompressedTrie 
 
     Media *mediaToDelete = results[choice - 1];
 
-   
     for (int i = 0; i < mediaCount; i++)
     {
         if (mediaList[i] == mediaToDelete)
         {
             mediaList[i] = nullptr;
 
-           
-            compressedTrie.remove(mediaToDelete->getName(),mediaToDelete);
+            compressedTrie.remove(mediaToDelete->getName(), mediaToDelete);
 
-            
             hashTable.delete_media(mediaToDelete->getGenre(), mediaToDelete);
             hashTable.delete_media(mediaToDelete->getLanguage(), mediaToDelete);
             hashTable.delete_media(mediaToDelete->getCountryOfOrigin(), mediaToDelete);
-
 
             int remainingCount = 0;
             for (int j = 0; j < mediaCount; j++)
@@ -204,10 +198,12 @@ void AdminUser::deleteMedia(Media *mediaList[], int &mediaCount, CompressedTrie 
                 splayTree.remove(mediaToDelete->getName());
             }
 
-           
+            for (int i=0;i<number_of_user;i++){
+                users[i].removeFromFavorites(mediaToDelete);
+            }
+
             delete mediaToDelete;
 
-            
             for (int j = i; j < mediaCount - 1; j++)
             {
                 mediaList[j] = mediaList[j + 1];
@@ -219,4 +215,3 @@ void AdminUser::deleteMedia(Media *mediaList[], int &mediaCount, CompressedTrie 
         }
     }
 }
-

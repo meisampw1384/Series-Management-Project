@@ -31,7 +31,6 @@ public:
     void searchPrefix(const std::string &prefix, Media *results[], int &count);
     int getAllMedia(Media *results[]);
     void collectMedia(CompressedTrieNode *node, Media *results[], int &count);
-    Media *searchExact(const std::string &key);
 };
 
 #endif
