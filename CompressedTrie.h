@@ -25,8 +25,6 @@ public:
     ~CompressedTrie();
 
     void clear(CompressedTrieNode *node);
-    bool remove(const string &key, Media *media);
-    bool removeHelper(CompressedTrieNode *node, const std::string &key, int depth,Media* media);
     void insert(const std::string &key, Media *media);
     void searchPrefix(const std::string &prefix, Media *results[], int &count);
     int getAllMedia(Media *results[]);

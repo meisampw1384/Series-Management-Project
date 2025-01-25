@@ -126,7 +126,7 @@ void SplayTree::remove(const string &key)
     root = splay(root, key);
 
     if (root->mediaName != key)
-        return; // Key not found
+        return; 
 
     SplayNode *temp;
     if (!root->left)

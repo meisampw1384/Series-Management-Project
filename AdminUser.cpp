@@ -176,9 +176,8 @@ void AdminUser::deleteMedia(Media *mediaList[], int &mediaCount, CompressedTrie 
     {
         if (mediaList[i] == mediaToDelete)
         {
-            mediaList[i] = nullptr;
-
-            compressedTrie.remove(mediaToDelete->getName(), mediaToDelete);
+            string x="";
+            mediaToDelete->setName(x);
 
             hashTable.delete_media(mediaToDelete->getGenre(), mediaToDelete);
             hashTable.delete_media(mediaToDelete->getLanguage(), mediaToDelete);
@@ -193,7 +192,7 @@ void AdminUser::deleteMedia(Media *mediaList[], int &mediaCount, CompressedTrie 
                 }
             }
 
-            if (remainingCount == 0)
+            if (remainingCount == 1)
             {
                 splayTree.remove(mediaToDelete->getName());
             }
@@ -202,7 +201,7 @@ void AdminUser::deleteMedia(Media *mediaList[], int &mediaCount, CompressedTrie 
                 users[i].removeFromFavorites(mediaToDelete);
             }
 
-            delete mediaToDelete;
+            
 
             for (int j = i; j < mediaCount - 1; j++)
             {

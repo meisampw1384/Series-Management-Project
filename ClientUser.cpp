@@ -306,11 +306,15 @@ void ClientUser::searchMedia(string prefix)
     {
         for (int i = 0; i < count; i++)
         {
-            if (!SuggestionTree->search(results[i]->getGenre()))
+            if (results[i]->getName() != "")
             {
-                SuggestionTree->insert(results[i]->getGenre());
+                if (!SuggestionTree->search(results[i]->getGenre()))
+                {
+                    SuggestionTree->insert(results[i]->getGenre());
+                }
+
+                cout << "- " << results[i]->getName() << " (" << results[i]->getReleaseYear() << ")" << endl;
             }
-            cout << "- " << results[i]->getName() << " (" << results[i]->getReleaseYear() << ")" << endl;
         }
     }
 }
@@ -385,22 +389,24 @@ void ClientUser::advancedSearch()
                 for (int i = 0; i < prefixCount; i++)
                 {
                     string mediaName = prefixResults[i]->getName();
-                    foundInSplay = splayTree->search(mediaName); 
-
-                    if (foundInSplay && flag.find(mediaName)==flag.end())
+                    if (mediaName != "")
                     {
-                        searchMedia(mediaName);
+                        foundInSplay = splayTree->search(mediaName);
+
+                        if (foundInSplay && flag.find(mediaName) == flag.end())
+                        {
+                            searchMedia(mediaName);
+                        }
+                        flag.insert(mediaName);
                     }
-                    flag.insert(mediaName);
                 }
-                if (foundInSplay){
+                if (foundInSplay)
+                {
                     return;
                 }
             }
-            
         }
     }
-
 
     Media *prefixResults[100];
     int prefixCount = 0;
@@ -411,12 +417,14 @@ void ClientUser::advancedSearch()
 
     if (prefixCount > 0)
     {
-        cout << "Found " << prefixCount << " result(s) for \"" << query << "\":" << endl;
         for (int i = 0; i < prefixCount; i++)
         {
-            SuggestionTree->insert(prefixResults[i]->getGenre());
-            splayTree->insert(prefixResults[i]->getName());
-            cout << "- " << prefixResults[i]->getName() << " (" << prefixResults[i]->getReleaseYear() << ")" << endl;
+            if (prefixResults[i]->getName() != "")
+            {
+                SuggestionTree->insert(prefixResults[i]->getGenre());
+                splayTree->insert(prefixResults[i]->getName());
+                cout << "- " << prefixResults[i]->getName() << " (" << prefixResults[i]->getReleaseYear() << ")" << endl;
+            }
         }
     }
     else
@@ -436,13 +444,16 @@ void ClientUser::advancedSearch()
 
         for (int i = 0; i < mediaCount; i++)
         {
-            int distance = levenshteinDistance(query, allMedia[i]->getName());
-            if (distance <= 2)
+            if (allMedia[i]->getName() != "")
             {
-                SuggestionTree->insert(allMedia[i]->getGenre());
-                suggestions[suggestionCount] = allMedia[i]->getName();
-                distances[suggestionCount] = distance;
-                suggestionCount++;
+                int distance = levenshteinDistance(query, allMedia[i]->getName());
+                if (distance <= 2)
+                {
+                    SuggestionTree->insert(allMedia[i]->getGenre());
+                    suggestions[suggestionCount] = allMedia[i]->getName();
+                    distances[suggestionCount] = distance;
+                    suggestionCount++;
+                }
             }
         }
 
@@ -474,7 +485,7 @@ void ClientUser::advancedSearch()
 
             for (int i = 0; i < suggestionCount; i++)
             {
-                cout << "- " << suggestions[i]<< endl;
+                cout << "- " << suggestions[i] << endl;
                 splayTree->insert(suggestions[i]);
             }
         }
