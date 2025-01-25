@@ -368,24 +368,35 @@ void ClientUser::advancedSearch()
 
     if (splayTree)
     {
-        cout << "Searching frequently searched items for prefix \"" << query << "\":" << endl;
-
-        const int MAX_RECENT_MATCHES = 100;
-        string recentMatches[MAX_RECENT_MATCHES];
-        int matchCount = 0;
-
-        splayTree->getPrefixMatches(query, recentMatches, matchCount, MAX_RECENT_MATCHES);
-
-        if (matchCount > 0)
+        if (trie)
         {
-            cout << "Found in recently searched items:" << endl;
-            for (int i = 0; i < matchCount; i++)
+
+            Media *prefixResults[100];
+            int prefixCount = 0;
+
+            trie->searchPrefix(query, prefixResults, prefixCount);
+
+            if (prefixCount > 0)
             {
-                searchMedia(recentMatches[i]);
+                bool foundInSplay = false;
+                for (int i = 0; i < prefixCount; i++)
+                {
+                    string mediaName = prefixResults[i]->getName();
+                    foundInSplay = splayTree->search(mediaName); 
+
+                    if (foundInSplay)
+                    {
+                        searchMedia(mediaName);
+                    }
+                }
+                if (foundInSplay){
+                    return;
+                }
             }
-            return;
+            
         }
     }
+
 
     Media *prefixResults[100];
     int prefixCount = 0;
@@ -461,7 +472,6 @@ void ClientUser::advancedSearch()
             {
                 cout << "- " << suggestions[i] << endl;
                 splayTree->insert(suggestions[i]);
-                return;
             }
         }
     }
