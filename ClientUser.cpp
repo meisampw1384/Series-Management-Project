@@ -311,6 +311,7 @@ void ClientUser::searchMedia(string prefix)
                 if (!SuggestionTree->search(results[i]->getGenre()))
                 {
                     SuggestionTree->insert(results[i]->getGenre());
+                    splayTree->insert(results[i]->getName());
                 }
 
                 cout << "- " << results[i]->getName() << " (" << results[i]->getReleaseYear() << ")" << endl;
@@ -371,45 +372,43 @@ void ClientUser::advancedSearch()
     cout << "Enter media name (or part of it): ";
     cin >> query;
 
-    if (splayTree)
+    if (splayTree && trie)
     {
-        if (trie)
+        Media *prefixResults[100];
+        int prefixCount = 0;
+
+        trie->searchPrefix(query, prefixResults, prefixCount);
+
+        if (prefixCount > 0)
         {
+            unordered_set<string> flag;
+            bool foundInSplay = false;
 
-            Media *prefixResults[100];
-            int prefixCount = 0;
-
-            trie->searchPrefix(query, prefixResults, prefixCount);
-
-            if (prefixCount > 0)
+            for (int i = 0; i < prefixCount; i++)
             {
-                bool foundInSplay = false;
-                unordered_set<string> flag;
-
-                for (int i = 0; i < prefixCount; i++)
+                string mediaName = prefixResults[i]->getName();
+                if (!mediaName.empty())
                 {
-                    string mediaName = prefixResults[i]->getName();
-                    if (mediaName != "")
+                    if (splayTree->search(mediaName) && flag.find(mediaName) == flag.end())
                     {
-                        foundInSplay = splayTree->search(mediaName);
-
-                        if (foundInSplay && flag.find(mediaName) == flag.end())
-                        {
-                            searchMedia(mediaName);
-                        }
-                        flag.insert(mediaName);
+                        searchMedia(mediaName);
+                        foundInSplay = true;
                     }
+                    flag.insert(mediaName);
                 }
-                if (foundInSplay)
-                {
-                    return;
-                }
+            }
+
+            
+            if (foundInSplay)
+            {
+                return;
             }
         }
     }
 
     Media *prefixResults[100];
     int prefixCount = 0;
+
     if (trie)
     {
         trie->searchPrefix(query, prefixResults, prefixCount);
@@ -419,7 +418,7 @@ void ClientUser::advancedSearch()
     {
         for (int i = 0; i < prefixCount; i++)
         {
-            if (prefixResults[i]->getName() != "")
+            if (!prefixResults[i]->getName().empty())
             {
                 SuggestionTree->insert(prefixResults[i]->getGenre());
                 splayTree->insert(prefixResults[i]->getName());
@@ -433,6 +432,7 @@ void ClientUser::advancedSearch()
 
         Media *allMedia[10000];
         int mediaCount = 0;
+
         if (trie)
         {
             mediaCount = trie->getAllMedia(allMedia);
@@ -444,7 +444,7 @@ void ClientUser::advancedSearch()
 
         for (int i = 0; i < mediaCount; i++)
         {
-            if (allMedia[i]->getName() != "")
+            if (!allMedia[i]->getName().empty())
             {
                 int distance = levenshteinDistance(query, allMedia[i]->getName());
                 if (distance <= 2)
@@ -491,6 +491,7 @@ void ClientUser::advancedSearch()
         }
     }
 }
+
 
 void ClientUser::filterMedia(HashTable *hashTable)
 {
