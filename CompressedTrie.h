@@ -1,17 +1,16 @@
 #ifndef COMPRESSED_TRIE_H
 #define COMPRESSED_TRIE_H
 
-#include "Media.h" // Assuming you have a Media class defined
+#include "Media.h"
 
 class CompressedTrieNode
 {
 public:
     std::string value;
-    Media *mediaList[100];            // Array to hold multiple Media objects (up to 100)
-    int mediaCount;                   // To keep track of how many Media objects are stored in the node
-    CompressedTrieNode *children[26]; // Children nodes (for each letter a-z)
+    Media *mediaList[100];
+    int mediaCount;
+    CompressedTrieNode *children[26];
 
-    // Constructor
     CompressedTrieNode(std::string val = "");
 };
 

@@ -22,4 +22,4 @@ public:
     ~Series();
 };
 
-#endif // SERIES_H
+#endif
